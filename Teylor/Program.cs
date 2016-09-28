@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,11 @@ namespace Teylor
             double EndPosition = double.Parse(args[1]);
             double dX = double.Parse(args[2]);
 
+            //StreamWriter w = new StreamWriter("E:\\TeylorLog.txt");
+            //w.WriteLine(StartPosition);
+            //w.WriteLine(EndPosition);
+            //w.Close();
+
             double eps = 0.000000001;
 
             Console.WriteLine(string.Format("{0,-14} {1,-14}", "X", "Y"));
@@ -27,12 +33,13 @@ namespace Teylor
 
                 while (eps <= Math.Abs(an))
                 {
-                    an = (Math.Pow(-1, n)*Math.Pow(i,2*n))/Fact(2*n);
+                    an = (Math.Pow(-1, n) * Math.Pow(i, 2 * n)) / Fact(2 * n);
                     ++n;
                     sum += an;
                 }
                 Console.WriteLine(string.Format("{0,-14:0.########}  {1,-14:0.########}", i, sum));
             }
+            //Console.WriteLine(string.Format("{0,14:0.##########}",dX));
             //Console.ReadKey();
             
         }

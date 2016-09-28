@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -23,7 +24,7 @@ namespace LP._1C.OS.L2.Processes
         private int procCount = 1;
         private double from = 0.0, to = 1.0;
         private double dX;
-
+        StreamWriter w = new StreamWriter("E:\\TeylorLog.txt");
         List<Process> processes = new List<Process>();
 
         void AddNewListViewItem(string[] args)
@@ -52,16 +53,19 @@ namespace LP._1C.OS.L2.Processes
             }
         }
 
-        private bool isFirst = true;
+        //private bool isFirst = true;
         private void CreateProcessbtnClick(object sender, EventArgs e)
         {
             dX = (to - from) / 100000.0;
+            //MessageBox.Show(dX.ToString());
+            w.WriteLine(dX);
+            w.WriteLine(to);
+            w.WriteLine(from+"\n\n");
 
             double tabDelta = (to - from) / procCount;
 
             for (double i = from; i + tabDelta <= to; i+=tabDelta)
             {
-                //return;
                 var newProcess = new Process
                 {
                     StartInfo =
@@ -70,8 +74,16 @@ namespace LP._1C.OS.L2.Processes
                         UseShellExecute = false,
                         
                         Arguments = string.Format("{0} {1} {2}", i, i+tabDelta, dX),
+
                     }
                 };
+
+
+                w.WriteLine(dX);
+                w.WriteLine(to);
+                w.WriteLine(from+"\n");
+
+
                 newProcess.EnableRaisingEvents = true;
                 newProcess.Exited += newProcess_Exited;
 
@@ -81,7 +93,7 @@ namespace LP._1C.OS.L2.Processes
 
                 AddNewListViewItem(new string[] { newProcess.Id.ToString(), string.Format("[{0,10:f2};{1,10:0.f2}]", i, (i + tabDelta).ToString()), newProcess.PriorityClass.ToString() });
             }
-
+            //w.Close();
             st = processes[0].StartTime;
             Counter = processes.Count;
 
@@ -106,16 +118,11 @@ namespace LP._1C.OS.L2.Processes
                 
                 if (listView1.Items.Count<1)
                 {
-                    //var dtm = 0;// end - st;
                     var lvi2 = new ListViewItem() { Text = Counter.ToString() };
                     SetEndTime(proc2del);
-                    
                     TimeSpan dtm = new TimeSpan();
                     dtm = end - st;
-                    //lvi2.SubItems.Add(new ListViewItem.ListViewSubItem() { Text = Counter.ToString() });
                     lvi2.SubItems.Add(new ListViewItem.ListViewSubItem() { Text = dtm.Seconds.ToString() + "." + dtm.Milliseconds.ToString() });
-
-
                     listView2.Items.Add(lvi2);
                 }
             }
@@ -145,9 +152,7 @@ namespace LP._1C.OS.L2.Processes
             Process proc = (from p in processes where p.Id == (sender as Process).Id select p).SingleOrDefault();
             processes.Remove(proc);
 
-
             var dtspan = proc.ExitTime - proc.StartTime;
-            //dtlist.Add(dtspan);
             
             DeleteElement(proc);
         }
@@ -224,9 +229,17 @@ namespace LP._1C.OS.L2.Processes
 
                         listView1.SelectedItems[0].SubItems[2].Text = p.PriorityClass.ToString();
                     }
-            else
-                if (!sBtn.Checked)
-                    MessageBox.Show("Select the process from the list first");
+            //else
+            //    if (!sBtn.Checked)
+            //        MessageBox.Show("Select the process from the list first");
+        }
+        void PrioritiesReset()
+        {
+
+        }
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
 
     }
