@@ -33,8 +33,7 @@ namespace Teylor
                 }
                 Console.WriteLine(string.Format("{0,-14:0.########}  {1,-14:0.########}", i, sum));
             }
-                //Console.WriteLine(FuckingTeylor(0.0, 1.0));
-            Console.ReadKey();
+            //Console.ReadKey();
             
         }
 

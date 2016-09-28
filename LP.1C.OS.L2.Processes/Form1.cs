@@ -18,9 +18,7 @@ namespace LP._1C.OS.L2.Processes
         public Form1()
         {
             InitializeComponent();
-            //dX = (to - from) / 100000.0;
         }
-
 
         private int procCount = 1;
         private double from = 0.0, to = 1.0;
@@ -28,34 +26,6 @@ namespace LP._1C.OS.L2.Processes
 
         List<Process> processes = new List<Process>();
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            //var process = new Process
-            //{
-            //    StartInfo =
-            //    {
-            //        FileName = "E:\\VS Projects\\LP.1C.OS.L2.Processes\\Teylor\\bin\\Debug\\Teylor.exe",
-            //        //RedirectStandardOutput = true,
-            //        UseShellExecute = false,
-            //        Arguments = "0,0 1,0 "+ ((1.0 - 0.0)/100000.0).ToString()
-            //    }
-            //};
-            //process.Start();
-        }
-
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            processes.Add(new Process
-            {
-                StartInfo =
-                {
-                    FileName = "E:\\VS Projects\\LP.1C.OS.L2.Processes\\Teylor\\bin\\Debug\\Teylor.exe",
-                    UseShellExecute = false,
-                    Arguments = string.Format("{0} {1} {2}",from, to, dX)
-                }
-            });
-            
-        }
         void AddNewListViewItem(string[] args)
         {
             var lvi = new ListViewItem() { Text = Name = args[0] };
@@ -82,13 +52,14 @@ namespace LP._1C.OS.L2.Processes
             }
         }
 
+        private bool isFirst = true;
         private void CreateProcessbtnClick(object sender, EventArgs e)
         {
             dX = (to - from) / 100000.0;
 
             double tabDelta = (to - from) / procCount;
 
-            for (double i = from; i < to; i+=tabDelta)
+            for (double i = from; i + tabDelta <= to; i+=tabDelta)
             {
                 //return;
                 var newProcess = new Process
@@ -109,8 +80,10 @@ namespace LP._1C.OS.L2.Processes
                 processes[processes.Count - 1].Start();
 
                 AddNewListViewItem(new string[] { newProcess.Id.ToString(), string.Format("[{0,10:f2};{1,10:0.f2}]", i, (i + tabDelta).ToString()), newProcess.PriorityClass.ToString() });
-
             }
+
+            st = processes[0].StartTime;
+            Counter = processes.Count;
 
         }
         delegate void listViewDelegate(Process proc2del);
@@ -130,109 +103,131 @@ namespace LP._1C.OS.L2.Processes
                           select p).SingleOrDefault();
                 listView1.Items.Remove(lvi);
                 listView1.Refresh();
+                
+                if (listView1.Items.Count<1)
+                {
+                    //var dtm = 0;// end - st;
+                    var lvi2 = new ListViewItem() { Text = Counter.ToString() };
+                    SetEndTime(proc2del);
+                    
+                    TimeSpan dtm = new TimeSpan();
+                    dtm = end - st;
+                    //lvi2.SubItems.Add(new ListViewItem.ListViewSubItem() { Text = Counter.ToString() });
+                    lvi2.SubItems.Add(new ListViewItem.ListViewSubItem() { Text = dtm.Seconds.ToString() + "." + dtm.Milliseconds.ToString() });
+
+
+                    listView2.Items.Add(lvi2);
+                }
             }
         }
+        private int Counter = 0;
+        private List<TimeSpan> dtlist = new List<TimeSpan>();
 
-        delegate void listViewRefreshDelegate();
-        
+        delegate void SetEndTimeDelegate(Process proc);
+        void SetEndTime(Process proc)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new SetEndTimeDelegate(SetEndTime), new Process[] { proc });
+                return;
+            }
+            else
+            {
+                end = proc.ExitTime;
+            }
+        }        
+
+        private DateTime st;
+        private DateTime end;
         void newProcess_Exited(object sender, EventArgs e)
         {
             var senderProcess = (sender as Process);
             Process proc = (from p in processes where p.Id == (sender as Process).Id select p).SingleOrDefault();
             processes.Remove(proc);
+
+
+            var dtspan = proc.ExitTime - proc.StartTime;
+            //dtlist.Add(dtspan);
+            
             DeleteElement(proc);
         }
         private int procCounter = 0;
-        private void listView1_ItemActivate(object sender, EventArgs e)
-        {
-            //MessageBox.Show("  ");
-        }
-
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //MessageBox.Show(" SelectedChanged ");
-        }
 
         private void button2_Click(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count > 0)
-            {
                 foreach(Process p in processes)
-                {
                     if (p.Id.ToString()==listView1.SelectedItems[0].Text)
-                    {
                         p.Kill();
-                        //p.Close();
-                        //p.Dispose();
-                    }
-                }
-            }
             else
-            {
                 MessageBox.Show("Select the process from the list");
-            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             foreach(Process p in processes)
-            {
                 p.Kill();
-                //p.Close();
-                //p.Dispose();
-            }
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count > 0)
-            {
                 foreach (Process p in processes)
-                {
                     if (p.Id.ToString() == listView1.SelectedItems[0].Text)
-                    {
-                        //SuspendProcess(p.Handle);
                         NtResumeProcess(p.Handle);
-                        //p.Start();//NtSuspendProcess(p.Handle);
-                    }
-                }
-            }
             else
-            {
                 MessageBox.Show("Select the process from the list");
-            }
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count > 0)
-            {
                 foreach (Process p in processes)
-                {
                     if (p.Id.ToString() == listView1.SelectedItems[0].Text)
-                    {
                         NtSuspendProcess(p.Handle);
-                    }
-                }
-            }
             else
-            {
                 MessageBox.Show("Select the process from the list");
-            }
         }
+
+
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern IntPtr NtSuspendProcess(IntPtr ProcessHandle);
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern IntPtr NtResumeProcess(IntPtr ProcessHandle);
-        //public static extern IntPtr ResumeThread(IntPtr ProcessHandle);
 
-        //[DllImport("kernel32.dll", SetLastError = true)]
-        //public static extern int SuspendThread(IntPtr ProcessHandle);
 
+        private void PriorityStateChanged(object sender, EventArgs e)
+        {
+            var sBtn = sender as RadioButton;
+
+            if (listView1.SelectedItems.Count > 0)
+                foreach (Process p in processes)
+                    if (p.Id.ToString() == listView1.SelectedItems[0].Text)
+                    {
+                        if (sBtn == IdlePriorityBtn)
+                            p.PriorityClass = ProcessPriorityClass.Idle;
+                        if (sBtn == BelowNormalPriorityBtn)
+                            p.PriorityClass = ProcessPriorityClass.BelowNormal;
+                        if (sBtn == NormalPriorityBtn)
+                            p.PriorityClass = ProcessPriorityClass.Normal;
+                        if (sBtn == AboveNormalPriorityBtn)
+                            p.PriorityClass = ProcessPriorityClass.AboveNormal;
+                        if (sBtn == HighPriorityBtn)
+                            p.PriorityClass = ProcessPriorityClass.High;
+                        if (sBtn == RealTimePriorityBtn)
+                            p.PriorityClass = ProcessPriorityClass.RealTime;
+
+                        listView1.SelectedItems[0].SubItems[2].Text = p.PriorityClass.ToString();
+                    }
+            else
+                if (!sBtn.Checked)
+                    MessageBox.Show("Select the process from the list first");
+        }
 
     }
 }
