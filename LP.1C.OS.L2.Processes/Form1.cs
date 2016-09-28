@@ -57,10 +57,8 @@ namespace LP._1C.OS.L2.Processes
         private void CreateProcessbtnClick(object sender, EventArgs e)
         {
             dX = (to - from) / 100000.0;
-            //MessageBox.Show(dX.ToString());
-            w.WriteLine(dX);
-            w.WriteLine(to);
-            w.WriteLine(from+"\n\n");
+            //MessageBox.Show(dX.ToString
+
 
             double tabDelta = (to - from) / procCount;
 
@@ -229,17 +227,13 @@ namespace LP._1C.OS.L2.Processes
 
                         listView1.SelectedItems[0].SubItems[2].Text = p.PriorityClass.ToString();
                     }
-            //else
-            //    if (!sBtn.Checked)
-            //        MessageBox.Show("Select the process from the list first");
         }
         void PrioritiesReset()
         {
-
         }
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            PrioritiesReset();
         }
 
     }
