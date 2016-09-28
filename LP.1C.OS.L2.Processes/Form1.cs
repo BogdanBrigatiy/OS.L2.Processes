@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -154,10 +155,84 @@ namespace LP._1C.OS.L2.Processes
 
         private void button2_Click(object sender, EventArgs e)
         {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                foreach(Process p in processes)
+                {
+                    if (p.Id.ToString()==listView1.SelectedItems[0].Text)
+                    {
+                        p.Kill();
+                        //p.Close();
+                        //p.Dispose();
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Select the process from the list");
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            foreach(Process p in processes)
+            {
+                p.Kill();
+                //p.Close();
+                //p.Dispose();
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                foreach (Process p in processes)
+                {
+                    if (p.Id.ToString() == listView1.SelectedItems[0].Text)
+                    {
+                        //SuspendProcess(p.Handle);
+                        NtResumeProcess(p.Handle);
+                        //p.Start();//NtSuspendProcess(p.Handle);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Select the process from the list");
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                foreach (Process p in processes)
+                {
+                    if (p.Id.ToString() == listView1.SelectedItems[0].Text)
+                    {
+                        NtSuspendProcess(p.Handle);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Select the process from the list");
+            }
+        }
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern IntPtr NtSuspendProcess(IntPtr ProcessHandle);
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern IntPtr NtResumeProcess(IntPtr ProcessHandle);
+        //public static extern IntPtr ResumeThread(IntPtr ProcessHandle);
+
+        //[DllImport("kernel32.dll", SetLastError = true)]
+        //public static extern int SuspendThread(IntPtr ProcessHandle);
+
+
     }
 }
