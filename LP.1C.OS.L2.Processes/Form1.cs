@@ -208,7 +208,7 @@ namespace LP._1C.OS.L2.Processes
         {
             var sBtn = sender as RadioButton;
 
-            if (listView1.SelectedItems.Count > 0)
+            if (listView1.SelectedItems.Count > 0 && sBtn.Checked!=false)
                 foreach (Process p in processes)
                     if (p.Id.ToString() == listView1.SelectedItems[0].Text)
                     {
@@ -230,10 +230,29 @@ namespace LP._1C.OS.L2.Processes
         }
         void PrioritiesReset()
         {
+            IdlePriorityBtn.Checked = BelowNormalPriorityBtn.Checked = NormalPriorityBtn.Checked = AboveNormalPriorityBtn.Checked = HighPriorityBtn.Checked = RealTimePriorityBtn.Checked = false;
         }
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
             PrioritiesReset();
+            if (listView1.SelectedItems.Count < 1) return;
+            if (listView1.SelectedItems[0].SubItems[2].Text == ProcessPriorityClass.Idle.ToString())
+                IdlePriorityBtn.Checked = true;
+            if (listView1.SelectedItems[0].SubItems[2].Text == ProcessPriorityClass.BelowNormal.ToString())
+                BelowNormalPriorityBtn.Checked = true;
+            if (listView1.SelectedItems[0].SubItems[2].Text == ProcessPriorityClass.Normal.ToString())
+                NormalPriorityBtn.Checked = true;
+            if (listView1.SelectedItems[0].SubItems[2].Text == ProcessPriorityClass.AboveNormal.ToString())
+                AboveNormalPriorityBtn.Checked = true;
+            if (listView1.SelectedItems[0].SubItems[2].Text == ProcessPriorityClass.High.ToString())
+                HighPriorityBtn.Checked = true;
+            if (listView1.SelectedItems[0].SubItems[2].Text == ProcessPriorityClass.RealTime.ToString())
+                RealTimePriorityBtn.Checked = true;
         }
 
     }
