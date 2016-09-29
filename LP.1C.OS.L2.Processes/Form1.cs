@@ -84,6 +84,7 @@ namespace LP._1C.OS.L2.Processes
 
                 newProcess.EnableRaisingEvents = true;
                 newProcess.Exited += newProcess_Exited;
+                
 
                 processes.Add(newProcess);
 
@@ -253,6 +254,24 @@ namespace LP._1C.OS.L2.Processes
                 HighPriorityBtn.Checked = true;
             if (listView1.SelectedItems[0].SubItems[2].Text == ProcessPriorityClass.RealTime.ToString())
                 RealTimePriorityBtn.Checked = true;
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+                for (int i = 0; i < processes.Count; i++ )
+                {
+                    if (processes[i].Id.ToString() == listView1.SelectedItems[0].Text)
+                    {
+                        var p = processes[i];
+                        processes.RemoveAt(i);
+                        listView1.SelectedItems[0].Text = "STOPPED";
+                        listView1.Items.Remove(listView1.SelectedItems[0]);
+                        p.Close();
+                    }
+                }
+            else
+                MessageBox.Show("Select the process from the list");
         }
 
     }

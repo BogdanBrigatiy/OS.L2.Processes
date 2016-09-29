@@ -14,12 +14,6 @@ namespace Teylor
             double StartPosition = double.Parse(args[0]);
             double EndPosition = double.Parse(args[1]);
             double dX = double.Parse(args[2]);
-
-            //StreamWriter w = new StreamWriter("E:\\TeylorLog.txt");
-            //w.WriteLine(StartPosition);
-            //w.WriteLine(EndPosition);
-            //w.Close();
-
             double eps = 0.000000001;
 
             Console.WriteLine(string.Format("{0,-14} {1,-14}", "X", "Y"));
@@ -27,7 +21,6 @@ namespace Teylor
             for (double i = StartPosition; i <= EndPosition; i+=dX )
             {
                 int n = 1;
-                //double sum = 0;
                 double an = 1;
                 double sum = an;
 
@@ -39,9 +32,6 @@ namespace Teylor
                 }
                 Console.WriteLine(string.Format("{0,-14:0.########}  {1,-14:0.########}", i, sum));
             }
-            //Console.WriteLine(string.Format("{0,14:0.##########}",dX));
-            //Console.ReadKey();
-            
         }
 
         static long Fact(int num)
