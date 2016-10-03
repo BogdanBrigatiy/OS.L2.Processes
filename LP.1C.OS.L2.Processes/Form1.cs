@@ -268,6 +268,7 @@ namespace LP._1C.OS.L2.Processes
                         listView1.SelectedItems[0].Text = "STOPPED";
                         listView1.Items.Remove(listView1.SelectedItems[0]);
                         p.Close();
+                        return;
                     }
                 }
             else
